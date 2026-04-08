@@ -100,8 +100,8 @@ contract SafeSwapHook is BaseHook {
     // Constructor
     // ══════════════════════════════════════════════════════════════════════
 
-    constructor(IPoolManager _poolManager) BaseHook(_poolManager) {
-        owner = msg.sender;
+    constructor(IPoolManager _poolManager, address _owner) BaseHook(_poolManager) {
+        owner = _owner;
     }
 
     // ══════════════════════════════════════════════════════════════════════

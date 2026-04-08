@@ -75,7 +75,7 @@ contract SafeSwapHookTest is Test, Deployers {
 
         deployCodeTo(
             "SafeSwapHook.sol:SafeSwapHook",
-            abi.encode(address(manager)),
+            abi.encode(address(manager), address(this)),
             hookAddr
         );
         hook = SafeSwapHook(hookAddr);

@@ -13,17 +13,21 @@ import {SafeSwapHook} from "../src/SafeSwapHook.sol";
 ///     --rpc-url $RPC_URL --broadcast --verify \
 ///     -vvvv
 contract DeploySafeSwap is Script {
-    // Uniswap V4 PoolManager addresses (update for target chain)
-    // Arbitrum One: 0x360E68faCcca8cA495c1B759Fd9EEe466db9FB32
-    // Base:         0x498581fF718922c3f8e6A244956aF099B2652b2b
-    address constant POOL_MANAGER = 0x360E68faCcca8cA495c1B759Fd9EEe466db9FB32;
+    // Uniswap V4 PoolManager addresses
+    // Arbitrum Sepolia: 0xFB3e0C6F74eB1a21CC1Da29aeC80D2Dfe6C9a317
+    // Arbitrum One:     0x360E68faCcca8cA495c1B759Fd9EEe466db9FB32
+    // Base:             0x498581fF718922c3f8e6A244956aF099B2652b2b
+    address constant POOL_MANAGER = 0xFB3e0C6F74eB1a21CC1Da29aeC80D2Dfe6C9a317; // Arbitrum Sepolia
 
     function run() public {
+        uint256 deployerKey = vm.envUint("PRIVATE_KEY");
+        address deployer = vm.addr(deployerKey);
         uint160 flags = uint160(
             Hooks.BEFORE_INITIALIZE_FLAG | Hooks.BEFORE_SWAP_FLAG | Hooks.AFTER_SWAP_FLAG
         );
 
-        bytes memory constructorArgs = abi.encode(POOL_MANAGER);
+        // Constructor args: poolManager + owner (deployer wallet)
+        bytes memory constructorArgs = abi.encode(POOL_MANAGER, deployer);
 
         // Mine a salt that produces an address with the correct flag bits
         (address hookAddress, bytes32 salt) = HookMiner.find(
@@ -36,9 +40,10 @@ contract DeploySafeSwap is Script {
 
         console.log("Deploying SafeSwapHook to:", hookAddress);
         console.log("Salt:", vm.toString(salt));
+        console.log("Owner will be:", deployer);
 
-        vm.startBroadcast();
-        SafeSwapHook hook = new SafeSwapHook{salt: salt}(IPoolManager(POOL_MANAGER));
+        vm.startBroadcast(deployerKey);
+        SafeSwapHook hook = new SafeSwapHook{salt: salt}(IPoolManager(POOL_MANAGER), deployer);
         vm.stopBroadcast();
 
         require(address(hook) == hookAddress, "Hook address mismatch");
