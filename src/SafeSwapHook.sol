@@ -32,6 +32,7 @@ contract SafeSwapHook is BaseHook {
     error CooldownActive(uint256 nextAllowed);
     error BuyLimitExceeded();
     error NotOwner();
+    error NotAuthorized();
 
     // ══════════════════════════════════════════════════════════════════════
     // Events
@@ -91,6 +92,7 @@ contract SafeSwapHook is BaseHook {
     // ══════════════════════════════════════════════════════════════════════
 
     address public immutable owner;
+    address public factory;
 
     mapping(PoolId => PoolConfig) public poolConfigs;
     mapping(PoolId => mapping(address => WalletState)) internal _walletStates;
@@ -141,7 +143,7 @@ contract SafeSwapHook is BaseHook {
     }
 
     /// @notice Configure protection parameters for a pool. Must be called before pool initialization.
-    /// @dev Parameters are immutable after pool initialization.
+    /// @dev Parameters are immutable after pool initialization. Only owner or factory can call.
     function configurePool(
         PoolKey calldata key,
         bool memeIsToken0,
@@ -153,6 +155,7 @@ contract SafeSwapHook is BaseHook {
         uint64 launchMaxSellBps,
         uint64 launchCooldownSeconds
     ) external {
+        if (msg.sender != owner && msg.sender != factory) revert NotAuthorized();
         PoolId id = key.toId();
         if (poolConfigs[id].initialized) revert PoolAlreadyInitialized();
         if (maxSellBps == 0 || maxSellBps > uint64(BPS_DENOMINATOR)) revert InvalidMaxSellBps();
@@ -362,6 +365,12 @@ contract SafeSwapHook is BaseHook {
     // ══════════════════════════════════════════════════════════════════════
     // Owner functions
     // ══════════════════════════════════════════════════════════════════════
+
+    /// @notice Set the factory address authorized to configure pools
+    function setFactory(address _factory) external {
+        if (msg.sender != owner) revert NotOwner();
+        factory = _factory;
+    }
 
     /// @notice Withdraw accumulated fees from the hook contract
     function withdrawFees(address token, address to) external {
