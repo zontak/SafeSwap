@@ -1,0 +1,53 @@
+# SafeSwap
+
+> Anti-rug and anti-whale protection hook for Uniswap V4, deployed on Arbitrum One.
+
+## What it does
+
+SafeSwap is a Uniswap V4 hook that enforces sell-side protections on token pools:
+
+- **Sell Rate Limiting**: Maximum sell amount per wallet per time window (e.g., 2% of supply per 24h)
+- **Cooldown Between Sells**: Minimum time between sells per wallet (e.g., 60 seconds)
+- **Progressive Fees**: Larger sells pay higher LP fees (0.30% base, up to 5% for whale sells)
+- **Launch Protection Mode**: Stricter limits during the first hours after pool creation
+- **Immutable Configuration**: Pool parameters cannot be changed after creation
+
+## Contracts (Arbitrum One, verified on Arbiscan)
+
+- SafeSwapHook: 0x3E61d0519d598bF2dfAEf5B8Fa0256bF7e1D60c0
+- SafeSwapFactory: 0x3bB7a9ebc6351387E1E937772CFC3652f979cB4f
+- PoolManager (Uniswap V4): 0x360E68faCcca8cA495c1B759Fd9EEe466db9FB32
+
+## How to create a protected pool
+
+Call `createPool` on the SafeSwapFactory contract with:
+- memeToken: address of the token to protect
+- pairedToken: address of the paired token (e.g., WETH)
+- tickSpacing: pool tick spacing (e.g., 60)
+- sqrtPriceX96: initial price
+- maxSellBps: max sell per window in basis points (200 = 2%)
+- windowDuration: rate limit window in seconds (86400 = 24h)
+- cooldownSeconds: min seconds between sells
+- launchDurationSeconds: launch protection duration (0 to disable)
+- launchMaxBuyBps, launchMaxSellBps, launchCooldownSeconds: launch mode params
+
+## Fee tiers
+
+| Sell size (% of supply) | Fee   |
+|-------------------------|-------|
+| < 0.1%                  | 0.30% |
+| 0.1% – 0.5%            | 1.00% |
+| 0.5% – 1.0%            | 3.00% |
+| > 1.0%                  | 5.00% |
+
+## Links
+
+- Source code: https://github.com/zontak/SafeSwap
+- License: MIT
+- Built by: Kristiyan Petrov (https://github.com/zontak)
+
+## Known limitations
+
+- Uses tx.origin for seller identification (works for EOA wallets, not smart contract wallets)
+- Not formally audited
+- Protects against large sudden sells only, not gradual selling within limits

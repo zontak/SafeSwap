@@ -1,0 +1,407 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SafeSwap - Anti-Rug & Anti-Whale Protection for Uniswap V4</title>
+    <meta name="description" content="Protect your token launch with on-chain sell rate limiting, progressive fees, and anti-whale controls. SafeSwap is a verified, open-source Uniswap V4 hook deployed on Arbitrum.">
+    <meta name="keywords" content="anti-rug pull, anti-whale, uniswap v4 hook, token launch protection, sell rate limiting, progressive fees, arbitrum, defi security, meme coin protection, safe token launch">
+
+    <!-- Open Graph -->
+    <meta property="og:title" content="SafeSwap - Anti-Rug Protection for Uniswap V4">
+    <meta property="og:description" content="On-chain sell rate limiting and progressive fees to protect token launches from rug pulls and whale dumps.">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://zontak.github.io/SafeSwap">
+
+    <!-- Twitter Card -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="SafeSwap - Anti-Rug Protection for Uniswap V4">
+    <meta name="twitter:description" content="On-chain sell rate limiting and progressive fees to protect token launches from rug pulls and whale dumps.">
+
+    <!-- Canonical -->
+    <link rel="canonical" href="https://zontak.github.io/SafeSwap">
+
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=DM+Sans:ital,opsz,wght@0,9..40,300..700;1,9..40,300..700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+
+    <!-- JSON-LD Structured Data -->
+    <script type="application/ld+json">
+    {
+        "@context": "https://schema.org",
+        "@type": "SoftwareApplication",
+        "name": "SafeSwap",
+        "description": "Anti-rug and anti-whale protection hook for Uniswap V4. Enforces sell-side rate limiting and progressive fees on Arbitrum.",
+        "applicationCategory": "DeFi Security",
+        "operatingSystem": "Arbitrum One (EVM)",
+        "url": "https://zontak.github.io/SafeSwap",
+        "author": {
+            "@type": "Person",
+            "name": "Kristiyan Petrov",
+            "url": "https://github.com/zontak"
+        },
+        "license": "https://opensource.org/licenses/MIT",
+        "codeRepository": "https://github.com/zontak/SafeSwap"
+    }
+    </script>
+
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="nav" id="nav">
+        <div class="nav__inner">
+            <a href="#" class="nav__logo">
+                <svg class="nav__icon" viewBox="0 0 28 28" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M14 2L3 8v12l11 6 11-6V8L14 2z" stroke="currentColor" stroke-width="1.5" fill="none"/>
+                    <path d="M14 8l-5 3v6l5 3 5-3v-6l-5-3z" stroke="currentColor" stroke-width="1.5" fill="none"/>
+                    <circle cx="14" cy="14" r="2" fill="currentColor"/>
+                </svg>
+                <span>SafeSwap</span>
+            </a>
+            <div class="nav__links">
+                <a href="#how-it-works">How It Works</a>
+                <a href="#features">Features</a>
+                <a href="#security">Security</a>
+                <a href="https://github.com/zontak/SafeSwap" target="_blank" rel="noopener">GitHub</a>
+                <a href="https://arbiscan.io/address/0x3bB7a9ebc6351387E1E937772CFC3652f979cB4f#writeContract" target="_blank" rel="noopener" class="nav__cta">Launch Pool</a>
+            </div>
+            <button class="nav__toggle" aria-label="Toggle menu">
+                <span></span><span></span>
+            </button>
+        </div>
+    </nav>
+
+    <!-- Mobile Menu -->
+    <div class="mobile-menu" id="mobile-menu">
+        <a href="#how-it-works">How It Works</a>
+        <a href="#features">Features</a>
+        <a href="#security">Security</a>
+        <a href="https://github.com/zontak/SafeSwap" target="_blank" rel="noopener">GitHub</a>
+        <a href="https://arbiscan.io/address/0x3bB7a9ebc6351387E1E937772CFC3652f979cB4f#writeContract" target="_blank" rel="noopener" class="nav__cta">Launch Pool</a>
+    </div>
+
+    <main>
+        <!-- Hero -->
+        <section class="hero" id="hero">
+            <div class="hero__grid" id="hero-grid"></div>
+            <div class="hero__content">
+                <div class="hero__badge">
+                    <span class="hero__badge-dot"></span>
+                    Live on Arbitrum One
+                </div>
+                <h1 class="hero__title">
+                    Protect Your Token Launch from
+                    <span class="hero__title-accent">Rug Pulls</span> and
+                    <span class="hero__title-accent">Whale Dumps</span>
+                </h1>
+                <p class="hero__subtitle">
+                    SafeSwap is a Uniswap V4 hook that enforces sell-side rate limiting and progressive fees - so no single wallet can crash your token's price.
+                </p>
+                <div class="hero__actions">
+                    <a href="https://arbiscan.io/address/0x3bB7a9ebc6351387E1E937772CFC3652f979cB4f#writeContract" target="_blank" rel="noopener" class="btn btn--primary">
+                        Launch a Protected Pool
+                        <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M3 8h10m0 0L9 4m4 4L9 12" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                    </a>
+                    <a href="https://github.com/zontak/SafeSwap" target="_blank" rel="noopener" class="btn btn--ghost">
+                        Read the Source Code
+                        <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M4 1h9v9m0-9L1 13" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                    </a>
+                </div>
+                <div class="hero__contracts">
+                    <code>Hook: 0x3E61...60c0</code>
+                    <code>Factory: 0x3bB7...cB4f</code>
+                </div>
+            </div>
+            <div class="hero__fade"></div>
+        </section>
+
+        <!-- Problem -->
+        <section class="problem" id="problem">
+            <div class="container">
+                <div class="section-label">The Problem</div>
+                <h2 class="problem__title">
+                    The #1 Reason People Don't Buy New Tokens?
+                    <span class="text-accent">Fear.</span>
+                </h2>
+                <p class="problem__body">
+                    Over 50% of new tokens show scam-like patterns. $2B+ is lost to rug pulls and exploits every year. Even legitimate projects suffer when a single whale dumps their entire bag in one transaction.
+                </p>
+                <div class="stats">
+                    <article class="stat" data-reveal>
+                        <div class="stat__value" data-count="2">$2B+</div>
+                        <div class="stat__label">Lost to crypto scams yearly</div>
+                        <cite class="stat__source">Chainalysis Crypto Crime Report</cite>
+                    </article>
+                    <article class="stat" data-reveal>
+                        <div class="stat__value" data-count="50">50%+</div>
+                        <div class="stat__label">Of new tokens exhibit rug-pull patterns</div>
+                        <cite class="stat__source">Solidus Labs</cite>
+                    </article>
+                    <article class="stat" data-reveal>
+                        <div class="stat__value">24h</div>
+                        <div class="stat__label">Most rug pulls happen within the first day</div>
+                        <cite class="stat__source">&nbsp;</cite>
+                    </article>
+                </div>
+                <p class="problem__closing">
+                    Your investors deserve better. SafeSwap makes trust <strong>enforceable</strong>, not optional.
+                </p>
+            </div>
+        </section>
+
+        <!-- How It Works -->
+        <section class="how" id="how-it-works">
+            <div class="container">
+                <div class="section-label">How It Works</div>
+                <h2>On-Chain Protection in 3 Steps</h2>
+                <div class="steps">
+                    <article class="step" data-reveal>
+                        <div class="step__number">01</div>
+                        <h3 class="step__title">Create a Pool</h3>
+                        <p class="step__body">Use the SafeSwap Factory to create a Uniswap V4 pool with built-in protection. Choose your token pair, set your limits, done.</p>
+                    </article>
+                    <article class="step" data-reveal>
+                        <div class="step__number">02</div>
+                        <h3 class="step__title">Protection Activates Automatically</h3>
+                        <p class="step__body">Every sell is checked against your configured limits. Rate limiting, cooldowns, and progressive fees kick in - enforced by the smart contract, not by trust.</p>
+                    </article>
+                    <article class="step" data-reveal>
+                        <div class="step__number">03</div>
+                        <h3 class="step__title">Trade With Confidence</h3>
+                        <p class="step__body">Traders see that your pool is SafeSwap-protected. No single wallet can dump more than your configured limit. Large sells pay higher fees that protect liquidity providers.</p>
+                    </article>
+                </div>
+            </div>
+        </section>
+
+        <!-- Features -->
+        <section class="features" id="features">
+            <div class="container">
+                <div class="section-label">Features</div>
+                <h2>What SafeSwap Enforces</h2>
+                <div class="features__grid">
+                    <article class="feature" data-reveal>
+                        <div class="feature__icon">
+                            <svg viewBox="0 0 32 32" fill="none"><rect x="4" y="14" width="24" height="14" rx="2" stroke="currentColor" stroke-width="1.5"/><path d="M10 14V9a6 6 0 1 1 12 0v5" stroke="currentColor" stroke-width="1.5"/><circle cx="16" cy="21" r="2" fill="currentColor"/></svg>
+                        </div>
+                        <h3>Sell Rate Limiting</h3>
+                        <p>Set a maximum sell amount per wallet per time window. For example: no wallet can sell more than 2% of total supply in 24 hours. Enforced on-chain, no exceptions.</p>
+                    </article>
+                    <article class="feature" data-reveal>
+                        <div class="feature__icon">
+                            <svg viewBox="0 0 32 32" fill="none"><circle cx="16" cy="16" r="12" stroke="currentColor" stroke-width="1.5"/><path d="M16 8v8l5 5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+                        </div>
+                        <h3>Cooldown Between Sells</h3>
+                        <p>Prevent rapid-fire selling. Each wallet must wait a configurable period between sells - stopping bots and panic cascades.</p>
+                    </article>
+                    <article class="feature feature--wide" data-reveal>
+                        <div class="feature__icon">
+                            <svg viewBox="0 0 32 32" fill="none"><path d="M4 28L4 16l6-4 6 8 6-12 6 4v16H4z" stroke="currentColor" stroke-width="1.5" fill="none"/></svg>
+                        </div>
+                        <h3>Progressive Fees</h3>
+                        <p>Larger sells pay higher LP fees. Small retail sells pay the standard 0.30%. Whale-sized sells pay up to 5%. This protects liquidity providers and discourages dumps.</p>
+                        <table class="fee-table">
+                            <thead>
+                                <tr>
+                                    <th>Sell Size (% of supply)</th>
+                                    <th>Fee</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr><td>&lt; 0.1%</td><td><span class="fee fee--1">0.30%</span></td></tr>
+                                <tr><td>0.1% – 0.5%</td><td><span class="fee fee--2">1.00%</span></td></tr>
+                                <tr><td>0.5% – 1.0%</td><td><span class="fee fee--3">3.00%</span></td></tr>
+                                <tr><td>&gt; 1.0%</td><td><span class="fee fee--4">5.00%</span></td></tr>
+                            </tbody>
+                        </table>
+                    </article>
+                    <article class="feature" data-reveal>
+                        <div class="feature__icon">
+                            <svg viewBox="0 0 32 32" fill="none"><path d="M16 3l3 6h7l-5.5 4.5L22 21l-6-4-6 4 1.5-7.5L6 9h7l3-6z" stroke="currentColor" stroke-width="1.5"/></svg>
+                        </div>
+                        <h3>Launch Protection Mode</h3>
+                        <p>The most vulnerable period is right after launch. SafeSwap offers stricter limits for the first hours - tighter buy/sell caps, longer cooldowns. Once the launch window expires, normal limits take over automatically.</p>
+                    </article>
+                    <article class="feature" data-reveal>
+                        <div class="feature__icon">
+                            <svg viewBox="0 0 32 32" fill="none"><path d="M16 4L4 10v8c0 7 5.3 13.5 12 15 6.7-1.5 12-8 12-15v-8L16 4z" stroke="currentColor" stroke-width="1.5"/><path d="M11 16l3 3 7-7" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                        </div>
+                        <h3>Immutable Configuration</h3>
+                        <p>Once a pool is created, its protection parameters cannot be changed - not even by the pool creator. This is trustless protection: the rules are set in stone.</p>
+                    </article>
+                </div>
+            </div>
+        </section>
+
+        <!-- Audiences -->
+        <section class="audiences" id="audiences">
+            <div class="container">
+                <div class="audience-cards">
+                    <!-- Token Launchers -->
+                    <article class="audience" data-reveal>
+                        <div class="audience__label">For Token Launchers</div>
+                        <h2>Build Trust Before Your First Trade</h2>
+                        <p>You know your project is legitimate. But your investors don't - and they've been burned before.</p>
+                        <p>SafeSwap gives you a <strong>verifiable guarantee</strong>: your token's pool has on-chain protection against dumps. Not a promise. Not a Telegram message. A smart contract that physically prevents large sudden sells.</p>
+                        <ul class="audience__list">
+                            <li>A Uniswap V4 pool with built-in anti-dump protection</li>
+                            <li>Verifiable on-chain - anyone can read the contract</li>
+                            <li>Configurable limits that match your tokenomics</li>
+                            <li>A trust signal that separates you from scams</li>
+                            <li>Free pool creation during our launch period</li>
+                        </ul>
+                        <div class="audience__steps">
+                            <h4>How to create a protected pool:</h4>
+                            <ol>
+                                <li>Go to the SafeSwap Factory contract on Arbiscan</li>
+                                <li>Call <code>createPool</code> with your token address, paired token, and protection parameters</li>
+                                <li>Add liquidity to your new pool</li>
+                                <li>Share the pool link - investors can verify the protection on-chain</li>
+                            </ol>
+                        </div>
+                        <a href="https://arbiscan.io/address/0x3bB7a9ebc6351387E1E937772CFC3652f979cB4f#writeContract" target="_blank" rel="noopener" class="btn btn--primary">
+                            Create a Pool on Arbiscan
+                            <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M4 1h9v9m0-9L1 13" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                        </a>
+                    </article>
+
+                    <!-- Traders -->
+                    <article class="audience audience--alt" data-reveal>
+                        <div class="audience__label">For Traders</div>
+                        <h2>Know Your Pool Is Protected Before You Buy</h2>
+                        <p>When you trade in a SafeSwap-protected pool, you know that:</p>
+                        <ul class="audience__list">
+                            <li>No wallet can dump more than the configured limit per day</li>
+                            <li>Large sellers pay higher fees that go to liquidity providers</li>
+                            <li>The protection rules are immutable - the creator can't turn them off</li>
+                            <li>Everything is on-chain and verifiable</li>
+                        </ul>
+                        <div class="audience__hook-addr">
+                            <h4>How to check if a pool is protected:</h4>
+                            <p>Look for the hook address on the pool:</p>
+                            <code class="audience__code">0x3E61d0519d598bF2dfAEf5B8Fa0256bF7e1D60c0</code>
+                            <p class="audience__note">If SafeSwap is the hook, the pool is protected.</p>
+                        </div>
+                        <a href="https://arbiscan.io/address/0x3E61d0519d598bF2dfAEf5B8Fa0256bF7e1D60c0" target="_blank" rel="noopener" class="btn btn--ghost">
+                            View Contract on Arbiscan
+                            <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M4 1h9v9m0-9L1 13" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                        </a>
+                    </article>
+                </div>
+            </div>
+        </section>
+
+        <!-- Security -->
+        <section class="security" id="security">
+            <div class="container">
+                <div class="section-label">Security & Trust</div>
+                <h2>Verified, Tested, Open Source</h2>
+                <div class="trust-grid">
+                    <article class="trust-card" data-reveal>
+                        <div class="trust-card__icon">
+                            <svg viewBox="0 0 32 32" fill="none"><circle cx="16" cy="16" r="12" stroke="currentColor" stroke-width="1.5"/><path d="M11 16l3 3 7-7" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                        </div>
+                        <h3>Verified on Arbiscan</h3>
+                        <p>Both contracts are verified - anyone can read the source code and confirm it matches the deployed bytecode.</p>
+                        <div class="trust-card__links">
+                            <a href="https://arbiscan.io/address/0x3E61d0519d598bF2dfAEf5B8Fa0256bF7e1D60c0#code" target="_blank" rel="noopener">View Hook</a>
+                            <a href="https://arbiscan.io/address/0x3bB7a9ebc6351387E1E937772CFC3652f979cB4f#code" target="_blank" rel="noopener">View Factory</a>
+                        </div>
+                    </article>
+                    <article class="trust-card" data-reveal>
+                        <div class="trust-card__icon">
+                            <svg viewBox="0 0 32 32" fill="none"><rect x="6" y="6" width="20" height="20" rx="3" stroke="currentColor" stroke-width="1.5"/><path d="M12 16h8M16 12v8" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+                        </div>
+                        <h3>100% Test Coverage</h3>
+                        <p>66 tests including fuzz testing with 10,000 random inputs. 100% line, statement, branch, and function coverage on both contracts.</p>
+                    </article>
+                    <article class="trust-card" data-reveal>
+                        <div class="trust-card__icon">
+                            <svg viewBox="0 0 32 32" fill="none"><path d="M16 3C9 3 3 9 3 16s6 13 13 13c1.2 0 2-.9 2-2v-1.5c0-.4-.2-.8-.5-1-.5-.3-.5-1-.1-1.4.8-.7 1.6-1.7 1.6-2.8 0-2.2-2.7-4-6-4-1.1 0-2 .9-2 2s.9 2 2 2" stroke="currentColor" stroke-width="1.5"/></svg>
+                        </div>
+                        <h3>Open Source</h3>
+                        <p>The full source code is available on GitHub. Review it, fork it, contribute.</p>
+                        <div class="trust-card__links">
+                            <a href="https://github.com/zontak/SafeSwap" target="_blank" rel="noopener">GitHub Repository</a>
+                        </div>
+                    </article>
+                    <article class="trust-card" data-reveal>
+                        <div class="trust-card__icon">
+                            <svg viewBox="0 0 32 32" fill="none"><path d="M16 4L4 10v8c0 7 5.3 13.5 12 15 6.7-1.5 12-8 12-15v-8L16 4z" stroke="currentColor" stroke-width="1.5"/></svg>
+                        </div>
+                        <h3>Immutable & Trustless</h3>
+                        <p>Pool configurations are set once and cannot be changed. There is no admin key that can disable protection. The owner can only withdraw earned fees and authorize the factory - not modify pool rules.</p>
+                    </article>
+                </div>
+
+                <!-- Transparency -->
+                <div class="transparency" data-reveal>
+                    <h3>Known Limitations</h3>
+                    <p>We believe in full transparency. Here's what you should know:</p>
+                    <ul>
+                        <li>Uses <code>tx.origin</code> for seller identification - works for 95%+ of wallets (EOA), but not for smart contract wallets (Gnosis Safe, AA wallets). Smart contract wallet support is planned.</li>
+                        <li>This contract has not been formally audited. It has been thoroughly tested but use at your own risk.</li>
+                        <li>SafeSwap protects against large sudden sells. It does not prevent gradual selling within the configured limits, nor does it protect against other types of exploits.</li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer__grid">
+                <div class="footer__brand">
+                    <div class="footer__logo">
+                        <svg class="nav__icon" viewBox="0 0 28 28" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M14 2L3 8v12l11 6 11-6V8L14 2z" stroke="currentColor" stroke-width="1.5" fill="none"/>
+                            <path d="M14 8l-5 3v6l5 3 5-3v-6l-5-3z" stroke="currentColor" stroke-width="1.5" fill="none"/>
+                            <circle cx="14" cy="14" r="2" fill="currentColor"/>
+                        </svg>
+                        <span>SafeSwap</span>
+                    </div>
+                    <p class="footer__tagline">Anti-rug & anti-whale protection for Uniswap V4</p>
+                    <div class="footer__built-by">
+                        Built by <strong>Kristiyan Petrov</strong>
+                        <div class="footer__socials">
+                            <a href="https://github.com/zontak" target="_blank" rel="noopener" aria-label="GitHub">
+                                <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0 0 24 12c0-6.63-5.37-12-12-12z"/></svg>
+                            </a>
+                            <a href="https://www.linkedin.com/in/kristiyan-petrov-zontak/" target="_blank" rel="noopener" aria-label="LinkedIn">
+                                <svg viewBox="0 0 24 24" fill="currentColor"><path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433a2.062 2.062 0 0 1-2.063-2.065 2.064 2.064 0 1 1 2.063 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/></svg>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+                <div class="footer__col">
+                    <h4>Contracts</h4>
+                    <p class="footer__addr">
+                        <span>SafeSwapHook</span>
+                        <a href="https://arbiscan.io/address/0x3E61d0519d598bF2dfAEf5B8Fa0256bF7e1D60c0" target="_blank" rel="noopener"><code>0x3E61...60c0</code></a>
+                    </p>
+                    <p class="footer__addr">
+                        <span>SafeSwapFactory</span>
+                        <a href="https://arbiscan.io/address/0x3bB7a9ebc6351387E1E937772CFC3652f979cB4f" target="_blank" rel="noopener"><code>0x3bB7...cB4f</code></a>
+                    </p>
+                </div>
+                <div class="footer__col">
+                    <h4>Resources</h4>
+                    <a href="https://github.com/zontak/SafeSwap" target="_blank" rel="noopener">GitHub Repository</a>
+                    <a href="https://arbiscan.io/address/0x3E61d0519d598bF2dfAEf5B8Fa0256bF7e1D60c0#code" target="_blank" rel="noopener">Arbiscan - Hook</a>
+                    <a href="https://arbiscan.io/address/0x3bB7a9ebc6351387E1E937772CFC3652f979cB4f#code" target="_blank" rel="noopener">Arbiscan - Factory</a>
+                    <a href="https://github.com/zontak/SafeSwap/blob/main/SECURITY.md" target="_blank" rel="noopener">Security Policy</a>
+                </div>
+            </div>
+            <div class="footer__bottom">
+                <p>SafeSwap is open-source software provided as-is. It is not financial advice. Users are responsible for their own due diligence. Smart contracts carry inherent risk.</p>
+                <p>MIT License &copy; 2026</p>
+            </div>
+        </div>
+    </footer>
+
+    <script src="script.js"></script>
+</body>
+</html>
