@@ -487,19 +487,19 @@ contract SafeSwapHookTest is Test, Deployers {
     // Owner functions
     // ══════════════════════════════════════════════════════════════════════
 
-    function test_withdrawFees_notOwner_reverts() public {
+    function test_rescueTokens_notOwner_reverts() public {
         vm.prank(seller1);
         vm.expectRevert(SafeSwapHook.NotOwner.selector);
-        hook.withdrawFees(Currency.unwrap(currency0), seller1);
+        hook.rescueTokens(Currency.unwrap(currency0), seller1);
     }
 
-    function test_withdrawFees_owner_noBalance() public {
+    function test_rescueTokens_owner_noBalance() public {
         address hookOwner = hook.owner();
         vm.prank(hookOwner);
-        hook.withdrawFees(Currency.unwrap(currency0), hookOwner);
+        hook.rescueTokens(Currency.unwrap(currency0), hookOwner);
     }
 
-    function test_withdrawFees_owner_withBalance() public {
+    function test_rescueTokens_owner_withBalance() public {
         address hookOwner = hook.owner();
         address tokenAddr = Currency.unwrap(currency0);
 
@@ -508,9 +508,9 @@ contract SafeSwapHookTest is Test, Deployers {
         uint256 hookBalance = MockERC20(tokenAddr).balanceOf(address(hook));
         assertEq(hookBalance, 1000e18);
 
-        // Owner withdraws
+        // Owner rescues
         vm.prank(hookOwner);
-        hook.withdrawFees(tokenAddr, hookOwner);
+        hook.rescueTokens(tokenAddr, hookOwner);
 
         // Hook should have 0, owner should have received the tokens
         assertEq(MockERC20(tokenAddr).balanceOf(address(hook)), 0);

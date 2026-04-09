@@ -14,8 +14,8 @@ SafeSwap is a Uniswap V4 hook that enforces sell-side protections on token pools
 
 ## Contracts (Arbitrum One, verified on Arbiscan)
 
-- SafeSwapHook: 0x3E61d0519d598bF2dfAEf5B8Fa0256bF7e1D60c0
-- SafeSwapFactory: 0x3bB7a9ebc6351387E1E937772CFC3652f979cB4f
+- SafeSwapHook: 0x66af5C4D7bA72dA6c635B26589C0af86353aE0C0
+- SafeSwapFactory: 0x7704377059CF4Eb88050445B78f1d6b1eb1fa78A
 - PoolManager (Uniswap V4): 0x360E68faCcca8cA495c1B759Fd9EEe466db9FB32
 
 ## How to create a protected pool

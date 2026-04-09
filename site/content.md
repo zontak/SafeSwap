@@ -129,7 +129,7 @@ When you trade in a SafeSwap-protected pool, you know that:
 - Everything is on-chain and verifiable
 
 **How to check if a pool is SafeSwap-protected:**
-Look for the hook address `0x3E61d0519d598bF2dfAEf5B8Fa0256bF7e1D60c0` on the pool. If SafeSwap is the hook, the pool is protected.
+Look for the hook address `0x66af5C4D7bA72dA6c635B26589C0af86353aE0C0` on the pool. If SafeSwap is the hook, the pool is protected.
 
 (Pool directory coming soon)
 
@@ -167,8 +167,8 @@ Kristiyan Petrov
 [GitHub icon] https://github.com/zontak  |  [LinkedIn icon] https://www.linkedin.com/in/kristiyan-petrov-zontak/
 
 **Contracts (Arbitrum One)**
-SafeSwapHook: 0x3E61d0519d598bF2dfAEf5B8Fa0256bF7e1D60c0
-SafeSwapFactory: 0x3bB7a9ebc6351387E1E937772CFC3652f979cB4f
+SafeSwapHook: 0x66af5C4D7bA72dA6c635B26589C0af86353aE0C0
+SafeSwapFactory: 0x7704377059CF4Eb88050445B78f1d6b1eb1fa78A
 
 **Resources**
 GitHub Repository
@@ -204,8 +204,8 @@ SafeSwap is an anti-rug and anti-whale protection hook for Uniswap V4, deployed 
 It enforces sell-side rate limiting (max sell per wallet per time window), cooldowns between sells, and progressive fees (larger sells pay higher fees). Pool configurations are immutable after creation.
 
 Contracts (Arbitrum One, verified on Arbiscan):
-- SafeSwapHook: 0x3E61d0519d598bF2dfAEf5B8Fa0256bF7e1D60c0
-- SafeSwapFactory: 0x3bB7a9ebc6351387E1E937772CFC3652f979cB4f
+- SafeSwapHook: 0x66af5C4D7bA72dA6c635B26589C0af86353aE0C0
+- SafeSwapFactory: 0x7704377059CF4Eb88050445B78f1d6b1eb1fa78A
 
 Source code: https://github.com/zontak/SafeSwap
 License: MIT

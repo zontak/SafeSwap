@@ -120,13 +120,6 @@ contract SafeSwapFactory {
         // Initialize the pool
         poolManager.initialize(key, sqrtPriceX96);
 
-        // Refund excess ETH
-        uint256 excess = msg.value - creationFee;
-        if (excess > 0) {
-            (bool sent,) = msg.sender.call{value: excess}("");
-            if (!sent) revert TransferFailed();
-        }
-
         emit PoolCreated(
             msg.sender,
             Currency.unwrap(currency0),
@@ -134,6 +127,13 @@ contract SafeSwapFactory {
             tickSpacing,
             creationFee
         );
+
+        // Refund excess ETH (after all state changes — CEI pattern)
+        uint256 excess = msg.value - creationFee;
+        if (excess > 0) {
+            (bool sent,) = msg.sender.call{value: excess}("");
+            if (!sent) revert TransferFailed();
+        }
     }
 
     // ══════════════════════════════════════════════════════════════════════

@@ -40,7 +40,7 @@ contract SafeSwapHook is BaseHook {
 
     event PoolConfigured(PoolId indexed poolId, uint256 maxSellBps, uint256 windowDuration, uint256 cooldownSeconds);
     event WhaleSellDetected(PoolId indexed poolId, address indexed seller, uint256 sellBps, uint24 fee);
-    event FeesWithdrawn(address indexed token, address indexed to, uint256 amount);
+    event TokensRescued(address indexed token, address indexed to, uint256 amount);
 
     // ══════════════════════════════════════════════════════════════════════
     // Types
@@ -269,7 +269,7 @@ contract SafeSwapHook is BaseHook {
         address,
         PoolKey calldata key,
         SwapParams calldata params,
-        BalanceDelta,
+        BalanceDelta delta,
         bytes calldata
     ) internal override returns (bytes4, int128) {
         PoolId id = key.toId();
@@ -277,10 +277,16 @@ contract SafeSwapHook is BaseHook {
 
         if (config.initialized && _isSell(config, params)) {
             address seller = tx.origin;
-            uint256 sellAmount = _absAmount(params);
+            // Use realized delta instead of specified amount to prevent exact-output bypass
+            int128 memeAmount = config.memeIsToken0 ? delta.amount0() : delta.amount1();
+            uint256 sellAmount = memeAmount < 0 ? uint256(uint128(-memeAmount)) : uint256(uint128(memeAmount));
 
             WalletState storage ws = _walletStates[id][seller];
-            ws.soldInWindow += uint128(sellAmount);
+            if (sellAmount <= type(uint128).max) {
+                ws.soldInWindow += uint128(sellAmount);
+            } else {
+                ws.soldInWindow = type(uint128).max;
+            }
             ws.lastSellTimestamp = uint64(block.timestamp);
         }
 
@@ -372,13 +378,13 @@ contract SafeSwapHook is BaseHook {
         factory = _factory;
     }
 
-    /// @notice Withdraw accumulated fees from the hook contract
-    function withdrawFees(address token, address to) external {
+    /// @notice Rescue tokens accidentally sent to the hook contract
+    function rescueTokens(address token, address to) external {
         if (msg.sender != owner) revert NotOwner();
         uint256 balance = IERC20(token).balanceOf(address(this));
         if (balance > 0) {
             IERC20(token).safeTransfer(to, balance);
-            emit FeesWithdrawn(token, to, balance);
+            emit TokensRescued(token, to, balance);
         }
     }
 }
