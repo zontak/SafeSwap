@@ -33,6 +33,7 @@ contract SafeSwapHook is BaseHook {
     error BuyLimitExceeded();
     error NotOwner();
     error NotAuthorized();
+    error InvalidParameters();
 
     // ══════════════════════════════════════════════════════════════════════
     // Events
@@ -41,6 +42,8 @@ contract SafeSwapHook is BaseHook {
     event PoolConfigured(PoolId indexed poolId, uint256 maxSellBps, uint256 windowDuration, uint256 cooldownSeconds);
     event WhaleSellDetected(PoolId indexed poolId, address indexed seller, uint256 sellBps, uint24 fee);
     event TokensRescued(address indexed token, address indexed to, uint256 amount);
+    event ProtocolFeeUpdated(uint16 oldFee, uint16 newFee);
+    event ProtocolFeesCollected(address indexed token, address indexed to, uint256 amount);
 
     // ══════════════════════════════════════════════════════════════════════
     // Types
@@ -86,6 +89,7 @@ contract SafeSwapHook is BaseHook {
     uint256 public constant TIER2_THRESHOLD = 10;      // 0.1%
     uint256 public constant TIER3_THRESHOLD = 50;      // 0.5%
     uint256 public constant TIER4_THRESHOLD = 100;     // 1.0%
+    uint16 public constant MAX_PROTOCOL_FEE_BPS = 50;  // max 0.5%
 
     // ══════════════════════════════════════════════════════════════════════
     // State
@@ -93,10 +97,12 @@ contract SafeSwapHook is BaseHook {
 
     address public immutable owner;
     address public factory;
+    uint16 public protocolFeeBps;
 
     mapping(PoolId => PoolConfig) public poolConfigs;
     mapping(PoolId => mapping(address => WalletState)) internal _walletStates;
     mapping(PoolId => SupplyCache) internal _supplyCaches;
+    mapping(address => uint256) public accumulatedProtocolFees;
 
     // ══════════════════════════════════════════════════════════════════════
     // Constructor
@@ -123,7 +129,7 @@ contract SafeSwapHook is BaseHook {
             beforeDonate: false,
             afterDonate: false,
             beforeSwapReturnDelta: false,
-            afterSwapReturnDelta: false,
+            afterSwapReturnDelta: true,
             afterAddLiquidityReturnDelta: false,
             afterRemoveLiquidityReturnDelta: false
         });
@@ -290,7 +296,33 @@ contract SafeSwapHook is BaseHook {
             ws.lastSellTimestamp = uint64(block.timestamp);
         }
 
-        return (this.afterSwap.selector, 0);
+        // Protocol fee: take a % of the unspecified token delta
+        int128 hookDelta;
+        uint16 _protocolFeeBps = protocolFeeBps; // cache SLOAD
+        if (_protocolFeeBps > 0 && config.initialized) {
+            bool exactInput = params.amountSpecified < 0;
+            int128 unspecifiedAmount;
+            Currency unspecifiedCurrency;
+
+            if (exactInput) {
+                unspecifiedAmount = params.zeroForOne ? -delta.amount1() : -delta.amount0();
+                unspecifiedCurrency = params.zeroForOne ? key.currency1 : key.currency0;
+            } else {
+                unspecifiedAmount = params.zeroForOne ? delta.amount0() : delta.amount1();
+                unspecifiedCurrency = params.zeroForOne ? key.currency0 : key.currency1;
+            }
+
+            if (unspecifiedAmount > 0) {
+                uint256 feeAmount = (uint256(uint128(unspecifiedAmount)) * _protocolFeeBps) / BPS_DENOMINATOR;
+                if (feeAmount > 0) {
+                    poolManager.take(unspecifiedCurrency, address(this), feeAmount);
+                    accumulatedProtocolFees[Currency.unwrap(unspecifiedCurrency)] += feeAmount;
+                    hookDelta = int128(uint128(feeAmount));
+                }
+            }
+        }
+
+        return (this.afterSwap.selector, hookDelta);
     }
 
     // ══════════════════════════════════════════════════════════════════════
@@ -376,6 +408,25 @@ contract SafeSwapHook is BaseHook {
     function setFactory(address _factory) external {
         if (msg.sender != owner) revert NotOwner();
         factory = _factory;
+    }
+
+    /// @notice Set protocol fee (owner only, capped at MAX_PROTOCOL_FEE_BPS)
+    function setProtocolFee(uint16 newFeeBps) external {
+        if (msg.sender != owner) revert NotOwner();
+        if (newFeeBps > MAX_PROTOCOL_FEE_BPS) revert InvalidParameters();
+        emit ProtocolFeeUpdated(protocolFeeBps, newFeeBps);
+        protocolFeeBps = newFeeBps;
+    }
+
+    /// @notice Withdraw accumulated protocol fees
+    function collectProtocolFees(address token, address to) external {
+        if (msg.sender != owner) revert NotOwner();
+        uint256 amount = accumulatedProtocolFees[token];
+        if (amount > 0) {
+            accumulatedProtocolFees[token] = 0;
+            IERC20(token).safeTransfer(to, amount);
+            emit ProtocolFeesCollected(token, to, amount);
+        }
     }
 
     /// @notice Rescue tokens accidentally sent to the hook contract

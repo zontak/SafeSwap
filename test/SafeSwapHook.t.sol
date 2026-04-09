@@ -69,7 +69,7 @@ contract SafeSwapHookTest is Test, Deployers {
 
         // Deploy hook at address with correct permission flags
         uint160 flags = uint160(
-            Hooks.BEFORE_INITIALIZE_FLAG | Hooks.BEFORE_SWAP_FLAG | Hooks.AFTER_SWAP_FLAG
+            Hooks.BEFORE_INITIALIZE_FLAG | Hooks.BEFORE_SWAP_FLAG | Hooks.AFTER_SWAP_FLAG | Hooks.AFTER_SWAP_RETURNS_DELTA_FLAG
         );
         address hookAddr = address(flags);
 
@@ -558,7 +558,7 @@ contract SafeSwapHookTest is Test, Deployers {
         assertFalse(perms.beforeDonate);
         assertFalse(perms.afterDonate);
         assertFalse(perms.beforeSwapReturnDelta);
-        assertFalse(perms.afterSwapReturnDelta);
+        assertTrue(perms.afterSwapReturnDelta);
     }
 
     // ══════════════════════════════════════════════════════════════════════
