@@ -1,0 +1,89 @@
+<svg width="1500" height="500" viewBox="0 0 1500 500" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="hbg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#07070c"/>
+      <stop offset="50%" stop-color="#0a0a14"/>
+      <stop offset="100%" stop-color="#07070c"/>
+    </linearGradient>
+    <linearGradient id="haccent" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#00d4aa" stop-opacity="0"/>
+      <stop offset="50%" stop-color="#00d4aa" stop-opacity="0.15"/>
+      <stop offset="100%" stop-color="#00d4aa" stop-opacity="0"/>
+    </linearGradient>
+    <filter id="hglow">
+      <feGaussianBlur stdDeviation="6" result="blur"/>
+      <feMerge>
+        <feMergeNode in="blur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+    <filter id="textglow">
+      <feGaussianBlur stdDeviation="3" result="blur"/>
+      <feMerge>
+        <feMergeNode in="blur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+  </defs>
+
+  <!-- Background -->
+  <rect width="1500" height="500" fill="url(#hbg)"/>
+
+  <!-- Grid lines -->
+  <g opacity="0.04" stroke="#00d4aa" stroke-width="0.5">
+    <line x1="0" y1="100" x2="1500" y2="100"/>
+    <line x1="0" y1="200" x2="1500" y2="200"/>
+    <line x1="0" y1="300" x2="1500" y2="300"/>
+    <line x1="0" y1="400" x2="1500" y2="400"/>
+    <line x1="200" y1="0" x2="200" y2="500"/>
+    <line x1="400" y1="0" x2="400" y2="500"/>
+    <line x1="600" y1="0" x2="600" y2="500"/>
+    <line x1="800" y1="0" x2="800" y2="500"/>
+    <line x1="1000" y1="0" x2="1000" y2="500"/>
+    <line x1="1200" y1="0" x2="1200" y2="500"/>
+  </g>
+
+  <!-- Accent glow line -->
+  <rect x="0" y="248" width="1500" height="4" fill="url(#haccent)"/>
+
+  <!-- Shield icon (left side) -->
+  <g transform="translate(520, 140)" filter="url(#hglow)">
+    <path d="M0 30 L60 0 L120 30 L120 100 C120 140 90 170 60 180 C30 170 0 140 0 100 Z"
+          fill="none" stroke="#00d4aa" stroke-width="2.5" opacity="0.8"/>
+    <path d="M60 50 L85 63 L85 87 L60 100 L35 87 L35 63 Z"
+          fill="none" stroke="#00d4aa" stroke-width="2" opacity="0.6"/>
+    <circle cx="60" cy="76" r="5" fill="#00d4aa" opacity="0.9"/>
+  </g>
+
+  <!-- Text -->
+  <text x="680" y="215" font-family="Georgia, serif" font-size="64" font-weight="400" fill="#e8e8ef" filter="url(#textglow)">
+    SafeSwap
+  </text>
+
+  <!-- Subtitle -->
+  <text x="680" y="270" font-family="monospace" font-size="16" fill="#00d4aa" letter-spacing="3" text-transform="uppercase" opacity="0.8">
+    ANTI-RUG PROTECTION FOR UNISWAP V4
+  </text>
+
+  <!-- Bottom accent line -->
+  <text x="680" y="320" font-family="monospace" font-size="13" fill="#55556a">
+    Live on Arbitrum One  |  Verified  |  Open Source
+  </text>
+
+  <!-- Decorative nodes -->
+  <g fill="#00d4aa" opacity="0.15">
+    <circle cx="150" cy="120" r="2"/>
+    <circle cx="250" cy="80" r="1.5"/>
+    <circle cx="180" cy="380" r="2"/>
+    <circle cx="1300" cy="150" r="2"/>
+    <circle cx="1350" cy="350" r="1.5"/>
+    <circle cx="1200" cy="400" r="2"/>
+    <circle cx="1100" cy="100" r="1.5"/>
+  </g>
+  <g stroke="#00d4aa" stroke-width="0.5" opacity="0.06">
+    <line x1="150" y1="120" x2="250" y2="80"/>
+    <line x1="1300" y1="150" x2="1350" y2="350"/>
+    <line x1="1200" y1="400" x2="1350" y2="350"/>
+    <line x1="1100" y1="100" x2="1300" y2="150"/>
+  </g>
+</svg>
